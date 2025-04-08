@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package snake;
+
+service SnakeGame {
+    rpc SendState(GameAction) returns (GameState);
+}
+
+message GameState {
+    repeated string map = 1;
+    int32 score = 2;
+    bool done = 3;
+}
+
+message GameAction {
+    string action = 1;
+}
