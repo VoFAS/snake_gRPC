@@ -12,8 +12,13 @@ include_directories("D:/vcpkg/vcpkg/installed/x64-windows/include")
 find_package(gRPC CONFIG REQUIRED)
 find_package(Protobuf CONFIG REQUIRED)
 
-add_executable(snake main.cpp
+add_executable(snake
+        main.cpp
         snake_service.h
         snake_service.cpp
+        snake.pb.cc
+        snake.grpc.pb.cc
+        proto/snake.pb.h
+        proto/snake.grpc.pb.h
 )
 target_link_libraries(snake PRIVATE gRPC::grpc++ gRPC::grpc++_reflection gRPC::gpr gRPC::grpc gRPC::grpc++ protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)

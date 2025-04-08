@@ -1,21 +1,37 @@
-//
-// Created by VoFAS on 25-4-8.
-//
+#pragma once
 
-#ifndef UNTITLED_SNAKE_SERVICE_H
-#define UNTITLED_SNAKE_SERVICE_H
-
-#endif //UNTITLED_SNAKE_SERVICE_H
-
+#include <iostream>
+#include <string>
+#include <vector>
+#include <random>
+#include <chrono>
+#include <memory>
 #include <grpcpp/grpcpp.h>
 #include "proto/snake.grpc.pb.h"
-#include "proto/snake.pb.h"
 
 class SnakeGameServiceImpl final : public snake::SnakeGame::Service {
 public:
-    grpc::Status SendState(grpc::ServerContext* context, const snake::GameState* request, snake::GameAction* response) override {
-        // 处理地图状态和当前分数，返回操作指令
-        response->set_action("UP"); // 示例操作指令
-        return grpc::Status::OK;
-    }
+    SnakeGameServiceImpl();
+
+    grpc::Status SendState(grpc::ServerContext* context,
+                           const snake::GameAction* request,
+                           snake::GameState* response) override;
+
+private:
+    std::vector<std::string> map;
+    std::vector<std::pair<int, int>> snake;
+    std::pair<int, int> food;
+    std::string direction;
+    int score;
+    bool game_over;
+    const int width = 20;
+    const int height = 20;
+
+    void initGame();
+    void updateGame(const std::string& action);
+    void generateFood();
+    bool checkCollision();
+    void updateMap();
 };
+
+void RunServer();
