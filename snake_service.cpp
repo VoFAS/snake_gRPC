@@ -53,7 +53,6 @@ void SnakeGameServiceImpl::generateFood() {
         y = disY(gen);
         valid = true;
 
-        // 检查生成的食物是否与蛇身重叠
         for (const auto& segment : snake) {
             if (segment.first == x && segment.second == y) {
                 valid = false;
@@ -66,7 +65,7 @@ void SnakeGameServiceImpl::generateFood() {
 }
 
 bool SnakeGameServiceImpl::checkCollision() {
-    // 获取蛇头位置
+    // 蛇头位置
     int x = snake[0].first;
     int y = snake[0].second;
 
@@ -75,7 +74,6 @@ bool SnakeGameServiceImpl::checkCollision() {
         return true;
     }
 
-    // 检查是否撞到自己
     for (size_t i = 1; i < snake.size(); ++i) {
         if (snake[i].first == x && snake[i].second == y) {
             return true;
@@ -86,12 +84,10 @@ bool SnakeGameServiceImpl::checkCollision() {
 }
 
 void SnakeGameServiceImpl::updateMap() {
-    // 清空地图
     for (auto& row : map) {
         std::fill(row.begin(), row.end(), '.');
     }
 
-    // 绘制蛇
     for (size_t i = 0; i < snake.size(); ++i) {
         int x = snake[i].first;
         int y = snake[i].second;
@@ -100,14 +96,12 @@ void SnakeGameServiceImpl::updateMap() {
         }
     }
 
-    // 绘制食物
     map[food.second][food.first] = 'F';
 }
 
 void SnakeGameServiceImpl::updateGame(const std::string& action) {
     if (game_over) return;
 
-    // 根据动作更新方向
     if (action == "UP" && direction != "DOWN") {
         direction = "UP";
     } else if (action == "DOWN" && direction != "UP") {
@@ -118,7 +112,6 @@ void SnakeGameServiceImpl::updateGame(const std::string& action) {
         direction = "RIGHT";
     }
 
-    // 根据方向移动蛇头
     int headX = snake[0].first;
     int headY = snake[0].second;
 
@@ -132,22 +125,17 @@ void SnakeGameServiceImpl::updateGame(const std::string& action) {
         headX++;
     }
 
-    // 更新蛇头位置
     snake.insert(snake.begin(), {headX, headY});
 
-    // 检查是否吃到食物
     if (headX == food.first && headY == food.second) {
         score++;
         generateFood();
     } else {
-        // 如果没有吃到食物，删除尾部
         snake.pop_back();
     }
 
-    // 检查碰撞
     game_over = checkCollision();
 
-    // 更新地图
     updateMap();
 }
 
@@ -167,14 +155,13 @@ grpc::Status SnakeGameServiceImpl::SendState(grpc::ServerContext* context,
     updateGame(action);
 
     if (response->done()) {
-        // 记录分数或其他需要保留的信息
         int final_score = response->score();
         std::cout << "game_end, final_score: " << final_score << std::endl;
 
-        // 重置游戏状态，开始新游戏
-        initGame(); // 调用初始化游戏的方法
 
-        // 将初始化后的游戏状态填充到响应中
+        initGame();
+
+
         response->clear_map();
         for (const auto& row : map) {
             response->add_map(row);
